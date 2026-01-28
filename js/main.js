@@ -254,7 +254,9 @@ function runToDoApp() {
 
     let allTasks = [];
 
-    function createTodoItem(todoText) {
+    function createTodoItem(taskObj) {
+        const uniqueId = crypto.randomUUID();
+
         const todoItem = createHtmlElement("li", {
             classes: "todo__item",
             styles: {
@@ -270,8 +272,6 @@ function runToDoApp() {
             },
         });
 
-        const uniqueId = crypto.randomUUID(); 
-
         const itemCheckbox = createHtmlElement("input", {
             classes: "todo-item__checkbox",
             styles: {
@@ -284,13 +284,17 @@ function runToDoApp() {
             },
         });
 
+        itemCheckbox.checked = taskObj.isDone;
+
         const itemLabel = createHtmlElement("label", {
             classes: "todo-item__label",
-            text: todoText,
+            text: taskObj.text,
             styles: {
                 fontSize: "20px",
                 flexGrow: "1",
                 paddingBottom: "2px",
+                textDecoration: taskObj.isDone ? "line-through" : "none",
+                color: taskObj.isDone ? "gray" : "black",
             },
             attrs: {
                 for: uniqueId,
@@ -314,30 +318,45 @@ function runToDoApp() {
             },
         });
 
-        addElements(todoItem, ...[itemCheckbox, itemLabel, itemDeleteButton]);
-
-        itemDeleteButton.addEventListener("click", () => {
-            todoItem.remove();
+        itemCheckbox.addEventListener("change", () => {
+            taskObj.isDone = itemCheckbox.checked;
+            updateTodoList();
         });
 
-        todoList.append(todoItem);
+        itemDeleteButton.addEventListener("click", () => {
+            allTasks = allTasks.filter((t) => t !== taskObj);
+            updateTodoList();
+        });
+
+        addElements(todoItem, itemCheckbox, itemLabel, itemDeleteButton);
+
+        return todoItem;
     }
 
     function addTodo() {
         const todoText = taskFieldInput.value.trim();
         if (todoText.length > 0) {
-            allTasks.push(todoText);
-            createTodoItem(todoText);
+            const newTask = {
+                text: todoText,
+                isDone: false,
+            };
+            allTasks.push(newTask);
+            updateTodoList();
             taskFieldInput.value = "";
             taskFieldInput.focus();
         }
+    }
+
+    function updateTodoList() {
+        todoList.innerHTML = "";
+        allTasks.forEach((taskObj) => {
+            todoList.append(createTodoItem(taskObj));
+        });
     }
 
     todoTaskForm.addEventListener("submit", function (e) {
         e.preventDefault();
         addTodo();
     });
-
-
 }
 runToDoApp();
