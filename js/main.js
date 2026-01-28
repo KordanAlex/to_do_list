@@ -252,9 +252,10 @@ function runToDoApp() {
         ),
     );
 
-    let allTasks = [];
+    let allTasks = getTasks();
+    updateTodoList();
 
-    function createTodoItem(taskObj) {
+    function createTaskItem(taskObj) {
         const uniqueId = crypto.randomUUID();
 
         const todoItem = createHtmlElement("li", {
@@ -320,11 +321,13 @@ function runToDoApp() {
 
         itemCheckbox.addEventListener("change", () => {
             taskObj.isDone = itemCheckbox.checked;
+            saveTasks();
             updateTodoList();
         });
 
         itemDeleteButton.addEventListener("click", () => {
             allTasks = allTasks.filter((t) => t !== taskObj);
+            saveTasks();
             updateTodoList();
         });
 
@@ -333,7 +336,7 @@ function runToDoApp() {
         return todoItem;
     }
 
-    function addTodo() {
+    function addTask() {
         const todoText = taskFieldInput.value.trim();
         if (todoText.length > 0) {
             const newTask = {
@@ -342,6 +345,7 @@ function runToDoApp() {
             };
             allTasks.push(newTask);
             updateTodoList();
+            saveTasks();
             taskFieldInput.value = "";
             taskFieldInput.focus();
         }
@@ -350,13 +354,23 @@ function runToDoApp() {
     function updateTodoList() {
         todoList.innerHTML = "";
         allTasks.forEach((taskObj) => {
-            todoList.append(createTodoItem(taskObj));
+            todoList.append(createTaskItem(taskObj));
         });
+    }
+
+    function saveTasks() {
+        const tasksJson = JSON.stringify(allTasks);
+        localStorage.setItem("tasks", tasksJson);
+    }
+
+    function getTasks() {
+        const tasks = localStorage.getItem("tasks") || "[]";
+        return JSON.parse(tasks);
     }
 
     todoTaskForm.addEventListener("submit", function (e) {
         e.preventDefault();
-        addTodo();
+        addTask();
     });
 }
 runToDoApp();
