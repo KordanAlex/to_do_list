@@ -329,6 +329,7 @@ function runToDoApp() {
             allTasks.push(todoText);
             createTodoItem(todoText);
             taskFieldInput.value = "";
+            taskFieldInput.focus();
         }
     }
 
