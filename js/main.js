@@ -4,16 +4,21 @@ function runToDoApp() {
         { classes = [], text = "", styles = {}, attrs = {} } = {},
     ) {
         const element = document.createElement(tag);
+
         const classArray = Array.isArray(classes) ? classes : [classes];
         const validClasses = classArray.filter(
             (cls) => typeof cls === "string" && cls.trim() !== "",
         );
         if (validClasses.length > 0) element.classList.add(...validClasses);
+
         if (text) element.textContent = text;
+
         Object.assign(element.style, styles);
+
         Object.entries(attrs).forEach(([key, value]) =>
             element.setAttribute(key, value),
         );
+
         return element;
     }
 
@@ -91,6 +96,7 @@ function runToDoApp() {
             boxShadow: "inset 0 0 3px 0 black",
             flexGrow: "1",
             marginRight: "10px",
+            fontSize: "20px",
         },
         attrs: {
             type: "text",
@@ -136,6 +142,7 @@ function runToDoApp() {
             flexGrow: "1",
             paddingRight: "10px",
             backgroundColor: "transparent",
+            fontSize: "20px",
         },
         attrs: {
             type: "text",
@@ -194,62 +201,10 @@ function runToDoApp() {
 
     const todoList = createHtmlElement("ul", {
         classes: "todo__list",
-    });
-
-    const todoItem = createHtmlElement("li", {
-        classes: "todo__item",
         styles: {
             display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: "20px",
-            backgroundColor: "white",
-            minHeight: "var(--min-height-field)",
-            borderRadius: "15px",
-            boxShadow: "inset 0 0 3px 1px black",
-            paddingInline: "15px",
-        },
-    });
-
-    const itemCheckbox = createHtmlElement("input", {
-        classes: "todo-item__checkbox",
-        styles: {
-            width: "20px",
-            aspectRatio: "1",
-        },
-        attrs: {
-            id: "item-checkbox",
-            type: "checkbox",
-        },
-    });
-
-    const itemLabel = createHtmlElement("label", {
-        classes: "todo-item__label",
-        text: "Task 1",
-        styles: {
-            fontSize: "20px",
-            flexGrow: "1",
-            paddingBottom: "2px",
-        },
-        attrs: {
-            for: "item-checkbox",
-        },
-    });
-
-    const itemDeleteButton = createHtmlElement("button", {
-        classes: "todo-item__delete-button",
-        styles: {
-            width: "20px",
-            aspectRatio: "1",
-            background:
-                "url(./../img/svg/close_ico.svg) center/cover no-repeat",
-            backgroundSize: "150%",
-            transitionDuration: "var(--transition-duration)",
-        },
-        attrs: {
-            type: "button",
-            title: "Delete",
-            ariaLabel: "Delete",
+            flexDirection: "column",
+            rowGap: "15px",
         },
     });
 
@@ -288,19 +243,100 @@ function runToDoApp() {
                         addElements(todoTotalTask, totalTaskValue),
                         deleteAllTaskButton,
                     ),
-                    addElements(
-                        todoList,
-                        addElements(
-                            todoItem,
-                            itemCheckbox,
-                            itemLabel,
-                            itemDeleteButton,
-                        ),
-                    ),
+
+                    todoList, // Вставляем ПУСТОЙ список (без todoItem внутри)
+
                     todoEmptyMessage,
                 ),
             ),
         ),
     );
+
+    let allTasks = [];
+
+    function createTodoItem(todoText) {
+        const todoItem = createHtmlElement("li", {
+            classes: "todo__item",
+            styles: {
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "20px",
+                backgroundColor: "white",
+                minHeight: "var(--min-height-field)",
+                borderRadius: "15px",
+                boxShadow: "inset 0 0 3px 1px black",
+                paddingInline: "15px",
+            },
+        });
+
+        const uniqueId = crypto.randomUUID(); 
+
+        const itemCheckbox = createHtmlElement("input", {
+            classes: "todo-item__checkbox",
+            styles: {
+                width: "20px",
+                aspectRatio: "1",
+            },
+            attrs: {
+                id: uniqueId,
+                type: "checkbox",
+            },
+        });
+
+        const itemLabel = createHtmlElement("label", {
+            classes: "todo-item__label",
+            text: todoText,
+            styles: {
+                fontSize: "20px",
+                flexGrow: "1",
+                paddingBottom: "2px",
+            },
+            attrs: {
+                for: uniqueId,
+            },
+        });
+
+        const itemDeleteButton = createHtmlElement("button", {
+            classes: "todo-item__delete-button",
+            styles: {
+                width: "20px",
+                aspectRatio: "1",
+                background:
+                    "url(./../img/svg/close_ico.svg) center/cover no-repeat",
+                backgroundSize: "150%",
+                transitionDuration: "var(--transition-duration)",
+            },
+            attrs: {
+                type: "button",
+                title: "Delete",
+                ariaLabel: "Delete",
+            },
+        });
+
+        addElements(todoItem, ...[itemCheckbox, itemLabel, itemDeleteButton]);
+
+        itemDeleteButton.addEventListener("click", () => {
+            todoItem.remove();
+        });
+
+        todoList.append(todoItem);
+    }
+
+    function addTodo() {
+        const todoText = taskFieldInput.value.trim();
+        if (todoText.length > 0) {
+            allTasks.push(todoText);
+            createTodoItem(todoText);
+            taskFieldInput.value = "";
+        }
+    }
+
+    todoTaskForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        addTodo();
+    });
+
+
 }
 runToDoApp();
