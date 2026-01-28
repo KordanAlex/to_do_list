@@ -289,6 +289,12 @@ function runToDoApp() {
                         deleteAllTaskButton,
                     ),
                     todoList,
+                    addElements(
+                        todoItem,
+                        itemCheckbox,
+                        itemLabel,
+                        itemDeleteButton,
+                    ),
                     todoEmptyMessage,
                 ),
             ),
