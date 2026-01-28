@@ -356,6 +356,7 @@ function runToDoApp() {
         allTasks.forEach((taskObj) => {
             todoList.append(createTaskItem(taskObj));
         });
+        updateCounter();
     }
 
     function saveTasks() {
@@ -366,6 +367,14 @@ function runToDoApp() {
     function getTasks() {
         const tasks = localStorage.getItem("tasks") || "[]";
         return JSON.parse(tasks);
+    }
+
+    function updateCounter() {
+        const total = allTasks.length;
+        const completed = allTasks.filter((t) => t.isDone).length;
+
+        totalTaskValue.textContent =
+            total > 0 ? `${completed} / ${total}` : "0";
     }
 
     todoTaskForm.addEventListener("submit", function (e) {
