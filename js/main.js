@@ -1,42 +1,29 @@
 function runToDoApp() {
     function createHtmlElement(
         tag,
-        {
-            classes = [],
-            text = "",
-            styles = {},
-            attrs = {},
-            parent = null,
-        } = {},
+        { classes = [], text = "", styles = {}, attrs = {} } = {},
     ) {
         const element = document.createElement(tag);
-
-        if (typeof classes === "string") {
-            element.classList.add(classes);
-        } else {
-            element.classList.add(...classes);
-        }
-
-        if (text) {
-            element.textContent = text;
-        }
-
+        const classArray = Array.isArray(classes) ? classes : [classes];
+        const validClasses = classArray.filter(
+            (cls) => typeof cls === "string" && cls.trim() !== "",
+        );
+        if (validClasses.length > 0) element.classList.add(...validClasses);
+        if (text) element.textContent = text;
         Object.assign(element.style, styles);
-
-        Object.entries(attrs).forEach(([key, value]) => {
-            element.setAttribute(key, value);
-        });
-
-        if (parent) {
-            parent.appendChild(element);
-        }
-
+        Object.entries(attrs).forEach(([key, value]) =>
+            element.setAttribute(key, value),
+        );
         return element;
+    }
+
+    function addElements(parent, ...children) {
+        children.forEach((child) => child && parent.append(child));
+        return parent;
     }
 
     const main = createHtmlElement("main", {
         classes: "main",
-        parent: document.body,
     });
 
     const todo = createHtmlElement("div", {
@@ -45,7 +32,6 @@ function runToDoApp() {
             maxWidth: "var(--width-container)",
             margin: "50px auto",
         },
-        parent: main,
     });
 
     const todoContainer = createHtmlElement("div", {
@@ -63,7 +49,6 @@ function runToDoApp() {
             rowGap: "25px",
             paddingInline: "var(--padding-inline-main)",
         },
-        parent: todo,
     });
 
     const todoTitle = createHtmlElement("h1", {
@@ -74,12 +59,10 @@ function runToDoApp() {
             marginTop: "15px",
             marginInline: "auto",
         },
-        parent: todoContainer,
     });
 
     const todoTaskForm = createHtmlElement("form", {
         classes: "todo__task-form",
-        parent: todoContainer,
     });
 
     const todoTaskField = createHtmlElement("div", {
@@ -88,7 +71,6 @@ function runToDoApp() {
             display: "flex",
             justifyContent: "space-between",
         },
-        parent: todoTaskForm,
     });
 
     const taskFieldLabel = createHtmlElement("label", {
@@ -97,7 +79,6 @@ function runToDoApp() {
         attrs: {
             for: "New-task",
         },
-        parent: todoTaskField,
     });
 
     const taskFieldInput = createHtmlElement("input", {
@@ -116,7 +97,6 @@ function runToDoApp() {
             id: "New-task",
             placeholder: "New task",
         },
-        parent: todoTaskField,
     });
 
     const taskFieldButton = createHtmlElement("Button", {
@@ -132,17 +112,14 @@ function runToDoApp() {
         attrs: {
             type: "submit",
         },
-        parent: todoTaskField,
     });
 
     const todoSearchForm = createHtmlElement("form", {
         classes: "todo__search-form",
-        parent: todoContainer,
     });
 
     const todoSearchField = createHtmlElement("div", {
         classes: ["todo__search-field", "field"],
-        parent: todoSearchForm,
     });
 
     const searchFieldLabel = createHtmlElement("label", {
@@ -151,7 +128,6 @@ function runToDoApp() {
         attrs: {
             for: "search-task",
         },
-        parent: todoSearchField,
     });
 
     const searchFieldInput = createHtmlElement("input", {
@@ -166,7 +142,6 @@ function runToDoApp() {
             id: "search-task",
             placeholder: "Search task",
         },
-        parent: todoSearchField,
     });
 
     const searchFieldButton = createHtmlElement("button", {
@@ -182,7 +157,6 @@ function runToDoApp() {
         attrs: {
             type: "button",
         },
-        parent: todoSearchField,
     });
 
     const todoInfo = createHtmlElement("div", {
@@ -194,18 +168,15 @@ function runToDoApp() {
             justifyContent: "space-between",
             paddingInline: "3px",
         },
-        parent: todoContainer,
     });
 
     const todoTotalTask = createHtmlElement("div", {
         classes: "todo__total-task",
         text: "Total Task: ",
-        parent: todoInfo,
     });
 
     const totalTaskValue = createHtmlElement("span", {
         text: "0",
-        parent: todoTotalTask,
     });
 
     const deleteAllTaskButton = createHtmlElement("button", {
@@ -219,12 +190,10 @@ function runToDoApp() {
         attrs: {
             type: "submit",
         },
-        parent: todoInfo,
     });
 
     const todoList = createHtmlElement("ul", {
         classes: "todo__list",
-        parent: todoContainer,
     });
 
     const todoItem = createHtmlElement("li", {
@@ -240,7 +209,6 @@ function runToDoApp() {
             boxShadow: "inset 0 0 3px 1px black",
             paddingInline: "15px",
         },
-        parent: todoList,
     });
 
     const itemCheckbox = createHtmlElement("input", {
@@ -253,7 +221,6 @@ function runToDoApp() {
             id: "item-checkbox",
             type: "checkbox",
         },
-        parent: todoItem,
     });
 
     const itemLabel = createHtmlElement("label", {
@@ -267,7 +234,6 @@ function runToDoApp() {
         attrs: {
             for: "item-checkbox",
         },
-        parent: todoItem,
     });
 
     const itemDeleteButton = createHtmlElement("button", {
@@ -285,13 +251,48 @@ function runToDoApp() {
             title: "Delete",
             ariaLabel: "Delete",
         },
-        parent: todoItem,
     });
 
     const todoEmptyMessage = createHtmlElement("div", {
         classes: "todo__empty-message",
-        parent: todoContainer,
-    })
-}
+    });
 
+    // Cборка проект в дом
+    document.body.append(
+        addElements(
+            main,
+            addElements(
+                todo,
+                addElements(
+                    todoContainer,
+                    todoTitle,
+                    addElements(
+                        todoTaskForm,
+                        addElements(
+                            todoTaskField,
+                            taskFieldLabel,
+                            taskFieldInput,
+                            taskFieldButton,
+                        ),
+                    ),
+                    addElements(
+                        todoSearchForm,
+                        addElements(
+                            todoSearchField,
+                            searchFieldInput,
+                            searchFieldButton,
+                        ),
+                    ),
+                    addElements(
+                        todoInfo,
+                        addElements(todoTotalTask, totalTaskValue),
+                        deleteAllTaskButton,
+                    ),
+                    todoList,
+                    todoEmptyMessage,
+                ),
+            ),
+        ),
+    );
+}
 runToDoApp();
