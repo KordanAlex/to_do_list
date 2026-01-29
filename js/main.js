@@ -9,13 +9,23 @@ function runToDoApp() {
     let allTasks = getTasks();
     updateTodoList();
 
+    let currentPage = 1;
+    const itemsPerPage = 10;
+
     ui.todoTaskForm.addEventListener("submit", function (e) {
         e.preventDefault();
         addTask();
     });
 
+    ui.searchFieldInput.addEventListener("input", () => {
+        currentPage = 1;
+        updateTodoList();
+    });
+
     ui.deleteAllTaskButton.addEventListener("click", () => {
-        const consentDeletion = confirm("Братишка не опускай руки, уверен, что хочешь завершить все дела и пойти бахнуть пивка?");
+        const consentDeletion = confirm(
+            "Братишка не опускай руки, уверен, что хочешь завершить все дела и пойти бахнуть пивка?",
+        );
 
         if (consentDeletion) {
             allTasks = [];
@@ -41,7 +51,14 @@ function runToDoApp() {
 
     function updateTodoList() {
         ui.todoList.innerHTML = "";
-        allTasks.forEach((taskObj) => {
+
+        const searchQuery = ui.searchFieldInput.value.toLowerCase();
+
+        const tasksToDisplay = allTasks.filter((taskObj) =>
+            taskObj.text.toLowerCase().includes(searchQuery),
+        );
+
+        tasksToDisplay.forEach((taskObj) => {
             const taskView = createTaskItem(taskObj);
 
             taskView.checkbox.addEventListener("change", () => {
@@ -58,6 +75,7 @@ function runToDoApp() {
 
             ui.todoList.append(taskView.element);
         });
+
         updateCounter();
     }
 

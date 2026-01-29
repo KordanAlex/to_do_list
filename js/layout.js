@@ -186,6 +186,22 @@ function createAppLayout() {
         classes: "todo__empty-message",
     });
 
+    const pagination = createHtmlElement("div", {
+        classes: "todo__pagination"
+    })
+
+    const leftPaginationButton = createHtmlElement("button", {
+        classes: "todo__pagination-left-button"
+    })
+
+    const list = createHtmlElement("ul", {
+        classes: "todo__pagination-list"
+    })
+
+    const rightPaginationButton = createHtmlElement("button", {
+        classes: "todo__pagination-right-button"
+    })
+
     addElements({
         parent: todoTaskForm,
         children: [todoTaskField]
