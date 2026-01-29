@@ -186,43 +186,61 @@ function createAppLayout() {
         classes: "todo__empty-message",
     });
 
-    const mainLayout = addElements(
-        main,
-        addElements(
-            todo,
-            addElements(
-                todoContainer,
-                todoTitle,
-                addElements(
-                    todoTaskForm,
-                    addElements(
-                        todoTaskField,
-                        taskFieldLabel,
-                        taskFieldInput,
-                        taskFieldButton,
-                    ),
-                ),
-                addElements(
-                    todoSearchForm,
-                    addElements(
-                        todoSearchField,
-                        searchFieldInput,
-                        searchFieldButton,
-                    ),
-                ),
-                addElements(
-                    todoInfo,
-                    addElements(todoTotalTask, totalTaskValue),
-                    deleteAllTaskButton,
-                ),
-                todoList,
-                todoEmptyMessage,
-            ),
-        ),
-    );
+    addElements({
+        parent: todoTaskForm,
+        children: [todoTaskField]
+    });
+
+    addElements({
+        parent: todoTaskField,
+        children: [taskFieldLabel, taskFieldInput, taskFieldButton]
+    });
+
+    addElements({
+        parent: todoSearchForm,
+        children: [todoSearchField]
+    });
+
+    addElements({
+        parent: todoSearchField,
+        children: [searchFieldInput, searchFieldButton]
+    });
+
+    addElements({
+        parent: todoTotalTask,
+        children: [totalTaskValue]
+    });
+
+    addElements({
+        parent: todoInfo,
+        children: [todoTotalTask, deleteAllTaskButton]
+    });
+
+    addElements({
+        parent: main,
+        children: [todo]
+    });
+
+    addElements({
+        parent: todo,
+        children: [todoContainer]
+    });
+
+    addElements({
+        parent: todoContainer,
+        children: [
+            todoTitle,
+            todoTaskForm,
+            todoSearchForm,
+            todoInfo,
+            todoList,
+            todoEmptyMessage
+        ]
+    });
+
 
     return {
-        mainLayout,
+        mainLayout: main,
         todoTaskForm,
         taskFieldInput,
         todoList,
@@ -232,4 +250,4 @@ function createAppLayout() {
     };
 }
 
-export {createAppLayout}
+export { createAppLayout };

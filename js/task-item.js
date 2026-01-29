@@ -1,6 +1,5 @@
 import { createHtmlElement, addElements } from "./dom-helpers.js";
 
-
 function createTaskItem(taskObj) {
     const uniqueId = crypto.randomUUID();
 
@@ -65,7 +64,10 @@ function createTaskItem(taskObj) {
         },
     });
 
-    addElements(todoItem, itemCheckbox, itemLabel, itemDeleteButton);
+    addElements({
+        parent: todoItem,
+        children: [itemCheckbox, itemLabel, itemDeleteButton],
+    });
 
     return {
         element: todoItem,

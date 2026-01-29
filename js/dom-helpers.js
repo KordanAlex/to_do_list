@@ -21,10 +21,13 @@ function createHtmlElement(
     return element;
 }
 
-function addElements(parent, ...children) {
-    children.forEach((child) => child && parent.append(child));
+function addElements({ parent, children = [] }) {
+    children.forEach((child) => {
+        if (child) parent.append(child);
+    });
     return parent;
 }
+
 
 
 export {createHtmlElement, addElements}
